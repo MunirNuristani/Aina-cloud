@@ -1,0 +1,223 @@
+{
+  "info": {
+    "name": "Aina Cloud",
+    "_postman_id": "aina-cloud-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",   "value": "http://localhost:3000" },
+    { "key": "deviceId",  "value": "esp32-plant-001" },
+    { "key": "deviceKey", "value": "14a888140359d249ad43973897c1403c57036e44483417c0" },
+    { "key": "plantId",   "value": "plant-001" },
+    { "key": "commandId", "value": "" },
+    { "key": "readingId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Plants",
+      "item": [
+        {
+          "name": "List plants",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/plants"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Devices",
+      "item": [
+        {
+          "name": "Register device",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.deviceId) {",
+                  "  pm.collectionVariables.set('deviceId', res.deviceId);",
+                  "}",
+                  "if (res.apiKey) {",
+                  "  pm.collectionVariables.set('deviceKey', res.apiKey);",
+                  "  console.log('SAVE THIS KEY:', res.apiKey);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/devices",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ESP32 Plant Monitor 002\",\n  \"locationName\": \"Living Room\",\n  \"locationLat\": 52.52,\n  \"locationLon\": 13.405\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Add plant to device",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/devices/{{deviceId}}/plants",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Basil\",\n  \"type\": \"Herb\",\n  \"targetMinMoisture\": 40,\n  \"targetMaxMoisture\": 75\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Update device",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/api/devices/{{deviceId}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"locationName\": \"Living Room\",\n  \"locationLat\": 51.5074,\n  \"locationLon\": -0.1278\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Get latest reading",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/devices/{{deviceId}}/latest"
+          }
+        },
+        {
+          "name": "Get readings history",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/devices/{{deviceId}}/readings?limit=50",
+              "query": [
+                { "key": "limit", "value": "50" }
+              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "devices", "{{deviceId}}", "readings"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Readings (Device auth)",
+      "item": [
+        {
+          "name": "Submit reading",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.reading && res.reading.id) {",
+                  "  pm.collectionVariables.set('readingId', res.reading.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/readings",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-device-id",  "value": "{{deviceId}}" },
+              { "key": "x-device-key", "value": "{{deviceKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"{{deviceId}}\",\n  \"plantId\": \"{{plantId}}\",\n  \"soilMoisture\": 42,\n  \"rawMoisture\": 2100,\n  \"pumpState\": false,\n  \"watered\": false,\n  \"temperature\": 22.5,\n  \"humidity\": 58.0,\n  \"light\": 300,\n  \"airQuality\": 95\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete reading",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/readings/{{readingId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Commands",
+      "item": [
+        {
+          "name": "Create pump command",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.command && res.command.id) {",
+                  "  pm.collectionVariables.set('commandId', res.command.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/commands",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"{{deviceId}}\",\n  \"durationMs\": 3000\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Get pending command (Device auth)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/devices/{{deviceId}}/commands/pending",
+            "header": [
+              { "key": "x-device-id",  "value": "{{deviceId}}" },
+              { "key": "x-device-key", "value": "{{deviceKey}}" }
+            ]
+          }
+        },
+        {
+          "name": "Report command result (Device auth)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/commands/{{commandId}}/result",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-device-id",  "value": "{{deviceId}}" },
+              { "key": "x-device-key", "value": "{{deviceKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

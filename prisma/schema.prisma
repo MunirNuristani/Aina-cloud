@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Device {
+  id           String    @id @default(cuid())
+  name         String
+  apiKeyHash   String
+  locationLat  Float?
+  locationLon  Float?
+  locationName String?
+  lastSeenAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  plants   Plant[]
+  readings Reading[]
+  commands PumpCommand[]
+}
+
+model Plant {
+  id                String   @id @default(cuid())
+  deviceId          String
+  name              String
+  type              String?
+  targetMinMoisture Int      @default(35)
+  targetMaxMoisture Int      @default(70)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  device   Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  readings Reading[]
+
+  @@index([deviceId])
+}
+
+model Reading {
+  id           String  @id @default(cuid())
+  deviceId     String
+  plantId      String?
+  soilMoisture Int
+  rawMoisture  Int
+  pumpState    Boolean @default(false)
+  watered      Boolean @default(false)
+
+  temperature Float?
+  humidity    Float?
+  light       Float?
+  airQuality  Float?
+
+  weatherTemp        Float?
+  weatherHumidity    Float?
+  weatherPressure    Float?
+  weatherDescription String?
+
+  createdAt DateTime @default(now())
+
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  plant  Plant?  @relation(fields: [plantId], references: [id], onDelete: SetNull)
+
+  @@index([deviceId, createdAt])
+  @@index([plantId, createdAt])
+}
+
+model PumpCommand {
+  id          String    @id @default(cuid())
+  deviceId    String
+  durationMs  Int
+  status      String    @default("pending")
+  reason      String?
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+  completedAt DateTime?
+  failedAt    DateTime?
+
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([deviceId, status, createdAt])
+}
