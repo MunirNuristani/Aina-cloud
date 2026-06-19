@@ -2,6 +2,15 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 
 async function getStatus() {
+  const url = process.env.DATABASE_URL
+  if (!url) return { ok: false, deviceCount: 0, error: 'DATABASE_URL is not set' }
+
+  try {
+    new URL(url)
+  } catch {
+    return { ok: false, deviceCount: 0, error: `DATABASE_URL is not a valid URL (starts with: ${url.slice(0, 20)}...)` }
+  }
+
   try {
     const deviceCount = await prisma.device.count()
     return { ok: true, deviceCount, error: null }
