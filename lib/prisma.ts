@@ -9,10 +9,16 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
+function withSslDisabled(url: string): string {
+  if (url.includes('sslmode=')) return url.replace(/sslmode=[^&?#]*/g, 'sslmode=disable')
+  return url + (url.includes('?') ? '&' : '?') + 'sslmode=disable'
+}
+
 function createPrismaClient() {
-  const pool = new Pool({ connectionString: process.env.POSTGRES_URL, ssl: { rejectUnauthorized: false } })
+  const rawUrl = process.env.POSTGRES_URL ?? ''
+  const pool = new Pool({ connectionString: rawUrl, ssl: { rejectUnauthorized: false } })
   const adapter = new PrismaPg(pool)
-  return new PrismaClient({ adapter })
+  return new PrismaClient({ adapter, datasourceUrl: withSslDisabled(rawUrl) })
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()
