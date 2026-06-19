@@ -5,7 +5,7 @@ import { PrismaClient } from '../app/generated/prisma/client'
 import { hash } from 'bcryptjs'
 import { randomBytes } from 'crypto'
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const pool = new Pool({ connectionString: process.env.POSTGRES_URL })
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 

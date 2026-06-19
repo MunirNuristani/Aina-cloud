@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 
 async function getStatus() {
-  if (!process.env.DATABASE_URL) {
-    return { ok: false, deviceCount: 0, error: 'DATABASE_URL is not set' }
+  if (!process.env.POSTGRES_URL) {
+    return { ok: false, deviceCount: 0, error: 'POSTGRES_URL is not set' }
   }
   try {
     const deviceCount = await prisma.device.count()
