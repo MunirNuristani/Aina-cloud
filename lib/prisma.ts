@@ -4,21 +4,16 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@/app/generated/prisma/client'
 
 dns.setDefaultResultOrder('ipv4first')
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-function withSslDisabled(url: string): string {
-  if (url.includes('sslmode=')) return url.replace(/sslmode=[^&?#]*/g, 'sslmode=disable')
-  return url + (url.includes('?') ? '&' : '?') + 'sslmode=disable'
-}
-
 function createPrismaClient() {
-  const rawUrl = process.env.POSTGRES_URL ?? ''
-  const pool = new Pool({ connectionString: rawUrl, ssl: { rejectUnauthorized: false } })
+  const pool = new Pool({ connectionString: process.env.POSTGRES_URL })
   const adapter = new PrismaPg(pool)
-  return new PrismaClient({ adapter, datasourceUrl: withSslDisabled(rawUrl) })
+  return new PrismaClient({ adapter })
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()
