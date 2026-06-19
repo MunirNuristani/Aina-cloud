@@ -1,10 +1,10 @@
-# Aina Cloud
+# Aina Backend
 
-[![CI](https://github.com/your-username/aina-cloud/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/aina-cloud/actions/workflows/ci.yml)
+[![CI](https://github.com/your-username/aina-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/aina-backend/actions/workflows/ci.yml)
 
 > Self-hosted plant monitoring backend for ESP32 soil sensors.
 
-Aina Cloud receives soil moisture readings from ESP32 microcontrollers over HTTPS, stores them in PostgreSQL, and exposes a REST API that any frontend (PWA, native app, home automation) can consume — no cloud account required.
+Aina Backend receives soil moisture readings from ESP32 microcontrollers over HTTPS, stores them in PostgreSQL, and exposes a REST API that any frontend (PWA, native app, home automation) can consume — no cloud account required.
 
 ---
 
@@ -45,8 +45,8 @@ Aina Cloud receives soil moisture readings from ESP32 microcontrollers over HTTP
 
 ```bash
 # 1. Clone
-git clone https://github.com/your-username/aina-cloud.git
-cd aina-cloud
+git clone https://github.com/your-username/aina-backend.git
+cd aina-backend
 
 # 2. Install dependencies
 npm install
@@ -230,7 +230,7 @@ See [`PWA.md`](PWA.md) for a complete guide to building a standalone Progressive
 
 ## Postman Collection
 
-Import [`aina-cloud.postman_collection.json`](aina-cloud.postman_collection.json) into Postman. Set the `baseUrl` collection variable to your server URL. The **Register device** and **Submit reading** requests auto-populate `deviceId`, `deviceKey`, and `readingId` variables via test scripts.
+Import [`aina-backend.postman_collection.json`](aina-backend.postman_collection.json) into Postman. Set the `baseUrl` collection variable to your server URL. The **Register device** and **Submit reading** requests auto-populate `deviceId`, `deviceKey`, and `readingId` variables via test scripts.
 
 ---
 

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Aina Cloud API',
+  title: 'Aina Backend API',
   description: 'Self-hosted plant monitoring backend',
 }
 

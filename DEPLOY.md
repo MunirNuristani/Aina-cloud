@@ -1,6 +1,6 @@
-# Deploying Aina Cloud
+# Deploying Aina Backend
 
-This guide covers three deployment options for a private instance of Aina Cloud.
+This guide covers three deployment options for a private instance of Aina Backend.
 The source code is open; your database, credentials, and device data are entirely private to your deployment.
 
 ---
@@ -128,7 +128,7 @@ OPENWEATHER_API_KEY=your-key-or-leave-blank
 ### 3. Clone the repo and start
 
 ```bash
-git clone https://github.com/your-username/aina-cloud.git .
+git clone https://github.com/your-username/aina-backend.git .
 npm ci
 docker compose up -d
 ```
